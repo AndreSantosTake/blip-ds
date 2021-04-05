@@ -7,7 +7,7 @@ import { Keyboard } from '../../../utils/enums';
   shadow: true,
 })
 export class Select {
-  private nativeInput?: HTMLBdsInputElement;
+  private nativeInput?: HTMLInputElement;
 
   @Element() el!: HTMLBdsSelectElement;
 
@@ -72,14 +72,19 @@ export class Select {
   @Prop({ reflect: true }) icon?: string = '';
 
   /**
-   * Placeholder for native input element.
-   */
-  @Prop() placeholder?: string = '';
-
-  /**
    * Set the placement of the options menu. Can be 'bottom' or 'top'.
    */
   @Prop() optionsPosition?: SelectOptionsPositionType = 'bottom';
+
+  /**
+   * The size of select
+   */
+  @Prop() size?: 'standard' | 'small' = 'standard';
+
+  /**
+   * The size of select
+   */
+  @Prop() labelWithValue?: boolean = true;
 
   @Watch('value')
   valueChanged(): void {
@@ -115,6 +120,8 @@ export class Select {
   }
 
   componentDidLoad() {
+    this.labelWithValue = this.size === 'small' ? false : this.labelWithValue;
+
     for (const option of this.childOptions) {
       option.selected = this.value === option.value;
       option.addEventListener('optionSelected', this.handler);
@@ -133,11 +140,6 @@ export class Select {
       ? Array.from(this.el.shadowRoot.querySelectorAll('bds-select-option')).find((option) => option.selected)
       : Array.from(this.el.querySelectorAll('bds-select-option')).find((option) => option.selected);
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private refNativeInput = (el: any): void => {
-    this.nativeInput = el;
-  };
 
   private onFocus = (): void => {
     this.bdsFocus.emit();
@@ -177,7 +179,7 @@ export class Select {
 
   private setFocusWrapper = (): void => {
     if (this.nativeInput) {
-      this.nativeInput.setFocus();
+      this.nativeInput.focus();
     }
   };
 
@@ -185,7 +187,7 @@ export class Select {
     const isInputElement = (event.relatedTarget as Element).localName === 'bds-input';
 
     if (this.nativeInput && !isInputElement) {
-      this.nativeInput.removeFocus();
+      this.nativeInput.blur();
     }
   };
 
@@ -216,34 +218,98 @@ export class Select {
     }
   };
 
+  private refNativeInput = (el: HTMLInputElement): void => {
+    this.nativeInput = el;
+  };
+
+  private renderLabel = () => {
+    if (this.label) {
+      if ((!this.value && !this.labelWithValue) || (this.labelWithValue && !this.value)) {
+        return (
+          <div class="select__body__label">
+            <bds-typo tag="span" variant={this.value ? 'fs-12' : 'fs-14'}>
+              {this.label}
+            </bds-typo>
+          </div>
+        );
+      } else if (this.value && !this.labelWithValue) {
+        return (
+          <div class="select__body__label">
+            <bds-typo tag="span" variant="fs-14">
+              {this.text}
+            </bds-typo>
+          </div>
+        );
+      } else if (this.size !== 'small' && this.labelWithValue && this.value) {
+        return (
+          <div class="select__body__label">
+            <bds-typo tag="span" variant={this.value ? 'fs-12' : 'fs-14'}>
+              {this.label}
+            </bds-typo>
+            <bds-typo tag="span" variant="fs-14">
+              {this.text}
+            </bds-typo>
+          </div>
+        );
+      }
+    } else {
+      return (
+        <div class="select__body__label">
+          <bds-typo tag="span" variant="fs-14">
+            {this.text}
+          </bds-typo>
+        </div>
+      );
+    }
+  };
+
+  addPadding = () => {
+    return null;
+  };
+
   render(): HTMLElement {
     const iconArrow = this.isOpen ? 'arrow-up' : 'arrow-down';
 
     return (
       <div
-        class="select"
+        class={{ select: true }}
         tabindex="0"
         onFocus={this.setFocusWrapper}
         onBlur={this.removeFocusWrapper}
         onKeyDown={this.keyPressWrapper}
       >
-        <bds-input
-          icon={this.icon}
-          label={this.label}
-          ref={this.refNativeInput}
-          onFocus={this.onFocus}
-          onBlur={this.onBlur}
+        <div
+          class={{
+            danger: this.danger,
+            disabled: this.disabled,
+            select__body: true,
+            'select__body--focus': this.isOpen,
+            'select__body--danger': this.danger,
+            [`select__body--size-${this.size}`]: true,
+          }}
           onClick={this.toggle}
-          value={this.text}
-          danger={this.danger}
-          disabled={this.disabled}
-          placeholder={this.placeholder}
-          readonly
         >
-          <div slot="input-right" class="select__icon">
+          <div class="select__body__content">
+            {this.icon && (
+              <div class="select__body__content__icon">
+                <bds-icon size="small" name={this.icon} color="inherit"></bds-icon>
+              </div>
+            )}
+            {this.renderLabel()}
+          </div>
+          {/* this input is used to set focus and blur event and can be used to filter content */}
+          <input
+            style={{ background: 'transparent', cursor: 'pointer' }}
+            ref={this.refNativeInput}
+            onFocus={this.onFocus}
+            onBlur={this.onBlur}
+            unselectable={true}
+            autocomplete="off"
+          ></input>
+          <div slot="input-right" class="select__arrow">
             <bds-icon size="small" name={iconArrow} color="inherit"></bds-icon>
           </div>
-        </bds-input>
+        </div>
         <div
           class={{
             select__options: true,

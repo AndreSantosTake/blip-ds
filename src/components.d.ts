@@ -695,6 +695,10 @@ export namespace Components {
          */
         "label"?: string;
         /**
+          * The size of select
+         */
+        "labelWithValue"?: boolean;
+        /**
           * The options of the select Should be passed this way: options='[{"value": "Cat", "label": "Meow"}, {"value": "Dog", "label": "Woof"}]' Options can also be passed as child by using bds-select-option component, but passing as a child you may have some compatibility problems with Angular.
          */
         "options"?: string | Option[];
@@ -703,9 +707,9 @@ export namespace Components {
          */
         "optionsPosition"?: SelectOptionsPositionType;
         /**
-          * Placeholder for native input element.
+          * The size of select
          */
-        "placeholder"?: string;
+        "size"?: 'standard' | 'small';
         /**
           * the value of the select.
          */
@@ -1972,6 +1976,10 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
+          * The size of select
+         */
+        "labelWithValue"?: boolean;
+        /**
           * Emitted when the select loses focus.
          */
         "onBdsBlur"?: (event: CustomEvent<void>) => void;
@@ -1996,9 +2004,9 @@ declare namespace LocalJSX {
          */
         "optionsPosition"?: SelectOptionsPositionType;
         /**
-          * Placeholder for native input element.
+          * The size of select
          */
-        "placeholder"?: string;
+        "size"?: 'standard' | 'small';
         /**
           * the value of the select.
          */

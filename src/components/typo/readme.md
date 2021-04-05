@@ -42,6 +42,7 @@
  - [bds-input-phone-number](../input-phone-number)
  - [bds-menu-list-item](../menu-list-item)
  - [bds-radio](../radio)
+ - [bds-select](../selects/select)
  - [bds-select-option](../select-option)
  - [bds-step](../stepper/step)
  - [bds-toast](../toast)
@@ -63,6 +64,7 @@ graph TD;
   bds-input-phone-number --> bds-typo
   bds-menu-list-item --> bds-typo
   bds-radio --> bds-typo
+  bds-select --> bds-typo
   bds-select-option --> bds-typo
   bds-step --> bds-typo
   bds-toast --> bds-typo
