@@ -1,5 +1,5 @@
 import { Component, h, State, Prop, EventEmitter, Event, Watch, Element, Listen } from '@stencil/core';
-import { Option, SelectChangeEventDetail, SelectOptionsPositionType } from '../select-interface';
+import { Option, SelectChangeEventDetail, SelectOptionsPositionType, SelectSizeType } from '../select-interface';
 import { Keyboard } from '../../../utils/enums';
 @Component({
   tag: 'bds-select',
@@ -12,6 +12,8 @@ export class Select {
   @Element() el!: HTMLBdsSelectElement;
 
   @State() isOpen? = false;
+
+  @State() isFocused? = false;
 
   @State() text? = '';
 
@@ -42,6 +44,36 @@ export class Select {
   @Prop({ reflect: true }) disabled? = false;
 
   /**
+   *  label in input, with he the input size increases.
+   */
+  @Prop() label? = '';
+
+  /**
+   * used for add icon in input left. Uses the bds-icon component.
+   */
+  @Prop({ reflect: true }) icon?: string = '';
+
+  /**
+   * Set the placement of the options menu. Can be 'bottom' or 'top'.
+   */
+  @Prop() optionsPosition?: SelectOptionsPositionType = 'bottom';
+
+  /**
+   * The size of select, if the size is set to short, the label won't be shown together with the value
+   */
+  @Prop() size?: SelectSizeType = 'standard';
+
+  /**
+   * IF true, the label will always be visible (the size should be standard)
+   */
+  @Prop() fixedLabel?: boolean = true;
+
+  /**
+   * Select placeholder
+   */
+  @Prop() placeholder?: string = '';
+
+  /**
    * Emitted when the value has changed.
    */
   @Event() bdsChange!: EventEmitter<SelectChangeEventDetail>;
@@ -60,31 +92,6 @@ export class Select {
    * Emitted when the select loses focus.
    */
   @Event() bdsBlur!: EventEmitter<void>;
-
-  /**
-   *  label in input, with he the input size increases.
-   */
-  @Prop() label? = '';
-
-  /**
-   * used for add icon in input left. Uses the bds-icon component.
-   */
-  @Prop({ reflect: true }) icon?: string = '';
-
-  /**
-   * Set the placement of the options menu. Can be 'bottom' or 'top'.
-   */
-  @Prop() optionsPosition?: SelectOptionsPositionType = 'bottom';
-
-  /**
-   * The size of select
-   */
-  @Prop() size?: 'standard' | 'small' = 'standard';
-
-  /**
-   * The size of select
-   */
-  @Prop() labelWithValue?: boolean = true;
 
   @Watch('value')
   valueChanged(): void {
@@ -120,7 +127,11 @@ export class Select {
   }
 
   componentDidLoad() {
-    this.labelWithValue = this.size === 'small' ? false : this.labelWithValue;
+    if (this.placeholder) {
+      this.fixedLabel = true;
+    } else {
+      this.fixedLabel = this.size === 'short' ? false : this.fixedLabel;
+    }
 
     for (const option of this.childOptions) {
       option.selected = this.value === option.value;
@@ -142,10 +153,12 @@ export class Select {
   }
 
   private onFocus = (): void => {
+    this.isFocused = true;
     this.bdsFocus.emit();
   };
 
   private onBlur = (): void => {
+    this.isFocused = false;
     this.bdsBlur.emit();
   };
 
@@ -184,7 +197,7 @@ export class Select {
   };
 
   private removeFocusWrapper = (event: FocusEvent): void => {
-    const isInputElement = (event.relatedTarget as Element).localName === 'bds-input';
+    const isInputElement = (event.relatedTarget as Element).localName === 'input';
 
     if (this.nativeInput && !isInputElement) {
       this.nativeInput.blur();
@@ -193,7 +206,7 @@ export class Select {
 
   private keyPressWrapper = (event: KeyboardEvent): void => {
     const isSelectElement = (event.target as Element).localName === 'bds-select';
-    const isInputElement = (event.target as Element).localName === 'bds-input';
+    const isInputElement = (event.target as Element).localName === 'input';
 
     switch (event.key) {
       case Keyboard.ENTER:
@@ -223,48 +236,35 @@ export class Select {
   };
 
   private renderLabel = () => {
-    if (this.label) {
-      if ((!this.value && !this.labelWithValue) || (this.labelWithValue && !this.value)) {
-        return (
-          <div class="select__body__label">
-            <bds-typo tag="span" variant={this.value ? 'fs-12' : 'fs-14'}>
-              {this.label}
-            </bds-typo>
-          </div>
-        );
-      } else if (this.value && !this.labelWithValue) {
-        return (
-          <div class="select__body__label">
-            <bds-typo tag="span" variant="fs-14">
-              {this.text}
-            </bds-typo>
-          </div>
-        );
-      } else if (this.size !== 'small' && this.labelWithValue && this.value) {
-        return (
-          <div class="select__body__label">
-            <bds-typo tag="span" variant={this.value ? 'fs-12' : 'fs-14'}>
-              {this.label}
-            </bds-typo>
-            <bds-typo tag="span" variant="fs-14">
-              {this.text}
-            </bds-typo>
-          </div>
-        );
-      }
-    } else {
+    if (this.label && (this.fixedLabel || (!this.fixedLabel && !this.value))) {
       return (
-        <div class="select__body__label">
-          <bds-typo tag="span" variant="fs-14">
-            {this.text}
-          </bds-typo>
-        </div>
+        <bds-typo tag="span" variant={this.value ? 'fs-12' : 'fs-14'}>
+          {this.label}
+        </bds-typo>
       );
     }
   };
 
-  addPadding = () => {
-    return null;
+  private renderText = () => {
+    return (
+      <bds-typo tag="span" variant="fs-14">
+        {this.text}
+      </bds-typo>
+    );
+  };
+
+  private renderPlaceholder = () => {
+    if (this.placeholder && !this.text) {
+      return (
+        <bds-typo tag="span" variant="fs-14" class="select__body__placeholder">
+          {this.placeholder}
+        </bds-typo>
+      );
+    }
+  };
+
+  private addPaddingClass = () => {
+    return this.size === 'short' ? 'select__body--padding-short' : 'select__body--padding-standard';
   };
 
   render(): HTMLElement {
@@ -280,12 +280,12 @@ export class Select {
       >
         <div
           class={{
-            danger: this.danger,
-            disabled: this.disabled,
             select__body: true,
-            'select__body--focus': this.isOpen,
+            'select__body--focus': this.isOpen || this.isFocused,
             'select__body--danger': this.danger,
+            'select__body--disabled': this.disabled,
             [`select__body--size-${this.size}`]: true,
+            [this.addPaddingClass()]: true,
           }}
           onClick={this.toggle}
         >
@@ -295,18 +295,21 @@ export class Select {
                 <bds-icon size="small" name={this.icon} color="inherit"></bds-icon>
               </div>
             )}
-            {this.renderLabel()}
+            <div class="select__body__label">
+              {this.renderPlaceholder()}
+              {this.text && this.renderLabel()}
+              {this.text && this.renderText()}
+            </div>
           </div>
           {/* this input is used to set focus and blur event and can be used to filter content */}
           <input
-            style={{ background: 'transparent', cursor: 'pointer' }}
             ref={this.refNativeInput}
             onFocus={this.onFocus}
             onBlur={this.onBlur}
             unselectable={true}
             autocomplete="off"
           ></input>
-          <div slot="input-right" class="select__arrow">
+          <div class="select__arrow">
             <bds-icon size="small" name={iconArrow} color="inherit"></bds-icon>
           </div>
         </div>

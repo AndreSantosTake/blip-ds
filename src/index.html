@@ -11,11 +11,25 @@
     body {
       background: #f5f8f9;
       /*background: #0a0f1a;*/
+      width: 320px;
     }
   </style>
 
   <body>
-    <bds-select size="small" label="Teste" icon="favorite">
+    <bds-input></bds-input>
+    <br>
+    <bds-select size="short" label="Teste" icon="favorite" fixed-label="true" options='[{"value": "Cat", "label": "Meow"}, {"value": "Dog", "label": "Woof"}]'>
+    </bds-select>
+    <br>
+    <bds-select size="small" label="Teste" disabled="true">
+      <bds-select-option value="1">Millie Bobby</bds-select-option>
+      <bds-select-option value="2">Finn Wolfhard</bds-select-option>
+      <bds-select-option value="3">David Harbour</bds-select-option>
+      <bds-select-option value="4">Gaten Matarazzo</bds-select-option>
+      <bds-select-option value="5">Caleb McLaughlin</bds-select-option>
+      <bds-select-option value="6">Noah Schnapp</bds-select-option>
+    </bds-select>
+    <bds-select size="small" placeholder="Teste">
       <bds-select-option value="1">Millie Bobby</bds-select-option>
       <bds-select-option value="2">Finn Wolfhard</bds-select-option>
       <bds-select-option value="3">David Harbour</bds-select-option>

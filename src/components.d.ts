@@ -16,7 +16,7 @@ import { IconSize, IconTheme, IconType } from "./components/icon/icon-interface"
 import { InputAutocapitalize, InputAutoComplete, InputCounterLengthRules, InputType } from "./components/input/input-interface";
 import { InputChipsTypes } from "./components/input-chips/input-chips-interface";
 import { InputEditableEventDetail, SizeInputEditable } from "./components/input-editable/input-editable";
-import { Option, SelectChangeEventDetail, SelectOptionsPositionType } from "./components/selects/select-interface";
+import { Option, SelectChangeEventDetail, SelectOptionsPositionType, SelectSizeType } from "./components/selects/select-interface";
 import { LoadingSpinnerVariant as LoadingSpinnerVariant1 } from "./components/loading-spinner/loading-spinner";
 import { PaperElevation } from "./components/paper/paper-interface";
 import { SwitchSize } from "./components/bds-switch/bds-switch";
@@ -687,6 +687,10 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * IF true, the label will always be visible (the size should be standard)
+         */
+        "fixedLabel"?: boolean;
+        /**
           * used for add icon in input left. Uses the bds-icon component.
          */
         "icon"?: string;
@@ -694,10 +698,6 @@ export namespace Components {
           * label in input, with he the input size increases.
          */
         "label"?: string;
-        /**
-          * The size of select
-         */
-        "labelWithValue"?: boolean;
         /**
           * The options of the select Should be passed this way: options='[{"value": "Cat", "label": "Meow"}, {"value": "Dog", "label": "Woof"}]' Options can also be passed as child by using bds-select-option component, but passing as a child you may have some compatibility problems with Angular.
          */
@@ -707,9 +707,13 @@ export namespace Components {
          */
         "optionsPosition"?: SelectOptionsPositionType;
         /**
-          * The size of select
+          * Select placeholder
          */
-        "size"?: 'standard' | 'small';
+        "placeholder"?: string;
+        /**
+          * The size of select, if the size is set to short, the label won't be shown together with the value
+         */
+        "size"?: SelectSizeType;
         /**
           * the value of the select.
          */
@@ -1968,6 +1972,10 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * IF true, the label will always be visible (the size should be standard)
+         */
+        "fixedLabel"?: boolean;
+        /**
           * used for add icon in input left. Uses the bds-icon component.
          */
         "icon"?: string;
@@ -1975,10 +1983,6 @@ declare namespace LocalJSX {
           * label in input, with he the input size increases.
          */
         "label"?: string;
-        /**
-          * The size of select
-         */
-        "labelWithValue"?: boolean;
         /**
           * Emitted when the select loses focus.
          */
@@ -2004,9 +2008,13 @@ declare namespace LocalJSX {
          */
         "optionsPosition"?: SelectOptionsPositionType;
         /**
-          * The size of select
+          * Select placeholder
          */
-        "size"?: 'standard' | 'small';
+        "placeholder"?: string;
+        /**
+          * The size of select, if the size is set to short, the label won't be shown together with the value
+         */
+        "size"?: SelectSizeType;
         /**
           * the value of the select.
          */

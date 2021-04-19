@@ -1,11 +1,14 @@
 @import 'mixins';
 
+$select-short-min-height: 40px;
+$select-standard-min-height: 56px;
+
 $select-options-box-shadow: 0px 2px 8px rgba(96, 123, 153, 0.3);
 $select-options-max-height: 250px;
 
 $select-radius: 8px;
 $select-padding: 6px 16px 6px 12px;
-$select-padding-small: 8px 16px 8px 12px;
+$select-padding-short: 8px 16px 8px 12px;
 $select-height: 56px;
 
 :host {
@@ -22,53 +25,76 @@ $select-height: 56px;
     position: absolute;
     left: 12px;
     bottom: 8px;
+    background: transparent;
+    cursor: default;
+    z-index: -1;
+    width: 80%;
   }
 
   &__body {
+    $self: &;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #fff;
-    border: 2px solid #d2dfe6;
+    background: $color-neutral-light-snow;
+    border: 1px solid $color-neutral-medium-wave;
     border-radius: $select-radius;
     box-sizing: border-box;
 
     &--focus {
-      border: 2px solid $color-primary-main;
+      border: 1px solid $color-primary-main;
       box-shadow: 0 0 2px 1px rgba($color-primary-light, 0.5);
-      border-radius: $select-radius;
     }
 
     &--danger {
-      border: 2px solid $color-extend-reds-delete;
+      border: 1px solid $color-extend-reds-delete;
       box-shadow: 0 0 2px 1px $color-extend-reds-flower;
-      border-radius: $select-radius;
+
+      #{$self}__label {
+        color: $color-extend-reds-delete;
+      }
+    }
+
+    &--disabled {
+      border: 1px solid $color-neutral-medium-wave;
+      background: $color-neutral-light-whisper;
+
+      #{$self}__label {
+        color: $color-neutral-medium-silver;
+      }
+
+      &:hover {
+        cursor: not-allowed;
+      }
+    }
+
+    &--padding-short {
+      padding: $select-padding-short;
+      min-height: $select-short-min-height;
+    }
+
+    &--padding-standard {
+      padding: $select-padding;
+      min-height: $select-standard-min-height;
     }
 
     &__label {
+      width: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
-    &--size-standard {
-      padding: $select-padding;
 
-      .select__body__label {
-        min-height: 40px;
-      }
-    }
-
-    &--size-small {
-      padding: $select-padding-small;
-
-      .select__body__label {
-        min-height: auto;
-      }
+    &__placeholder {
+      color: $color-neutral-medium-cloud;
     }
 
     &__content {
+      width: 100%;
       display: flex;
       align-items: center;
+      overflow: hidden;
+      white-space: nowrap;
 
       &__icon {
         color: $color-primary-main;
