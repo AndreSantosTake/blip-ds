@@ -306,7 +306,7 @@ export class BdsAutocomplete {
           readonly={false}
         >
           <div slot="input-right" class="select__icon">
-            <bds-icon size="small" theme="solid" name="error" onClick={this.cleanInputSelection}></bds-icon>
+            <bds-icon size="small" name="error" theme="solid" onClick={this.cleanInputSelection}></bds-icon>
             <bds-icon size="small" name={iconArrow} color="inherit"></bds-icon>
           </div>
         </bds-input>
